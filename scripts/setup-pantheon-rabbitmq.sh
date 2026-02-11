@@ -83,21 +83,21 @@ declare_queue "$ENCODED_VHOST" "q.agent.api.callback" "$DL_ARGS"
 # Dedicated dead-letter queue
 declare_queue "$ENCODED_VHOST" "$DLQ_NAME" '{}'
 
-# 4) Bindings for lifecycle exchange
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.factory" "agent.provision.requested"
+# 4) Bindings for v1 lifecycle exchange
+# v1 contract events:
+# - agent.create.requested
+# - agent.create.completed
+# - agent.registered
+# - agent.activated
+bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.factory" "agent.create.requested"
 
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.runtime" "agent.runtime.register.requested"
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.runtime" "agent.activation.requested"
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.runtime" "agent.deactivation.requested"
+# Runtime worker consumes the workspace-ready signal from factory.
+bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.runtime" "agent.create.completed"
 
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.workspace.move" "agent.activation.requested"
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.workspace.move" "agent.deactivation.requested"
-
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.api.callback" "agent.workspace.ready"
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.api.callback" "agent.runtime.registered"
+# API callback queue receives all terminal/progress callbacks in v1.
+bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.api.callback" "agent.create.completed"
+bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.api.callback" "agent.registered"
 bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.api.callback" "agent.activated"
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.api.callback" "agent.deactivated"
-bind_queue "$ENCODED_VHOST" "$LIFECYCLE_EXCHANGE" "q.agent.api.callback" "agent.failed"
 
 # 5) DLQ binding
 bind_queue "$ENCODED_VHOST" "$DLX_EXCHANGE" "$DLQ_NAME" "$DLQ_ROUTING_KEY"
