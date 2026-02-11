@@ -2,6 +2,7 @@ import type { Server as HttpServer } from "node:http";
 import type { WebSocketServer } from "ws";
 import type { CanvasHostHandler, CanvasHostServer } from "../canvas-host/server.js";
 import type { HeartbeatRunner } from "../infra/heartbeat-runner.js";
+import type { PantheonFactoryConsumerHandle } from "../pantheon/factory/consumer.js";
 import type { PluginServicesHandle } from "../plugins/services.js";
 import { type ChannelId, listChannelPlugins } from "../channels/plugins/index.js";
 import { stopGmailWatcher } from "../hooks/gmail-watcher.js";
@@ -13,6 +14,7 @@ export function createGatewayCloseHandler(params: {
   canvasHostServer: CanvasHostServer | null;
   stopChannel: (name: ChannelId, accountId?: string) => Promise<void>;
   pluginServices: PluginServicesHandle | null;
+  pantheonFactoryConsumer: PantheonFactoryConsumerHandle | null;
   cron: { stop: () => void };
   heartbeatRunner: HeartbeatRunner;
   nodePresenceTimers: Map<string, ReturnType<typeof setInterval>>;
@@ -66,6 +68,9 @@ export function createGatewayCloseHandler(params: {
     }
     if (params.pluginServices) {
       await params.pluginServices.stop().catch(() => {});
+    }
+    if (params.pantheonFactoryConsumer) {
+      await params.pantheonFactoryConsumer.stop().catch(() => {});
     }
     await stopGmailWatcher();
     params.cron.stop();
