@@ -26,7 +26,8 @@ services:
         "--port",
         "18789",
       ]
-
+    networks:
+      - shared_network
   openclaw-cli:
     image: ${OPENCLAW_IMAGE:-openclaw:local}
     environment:
@@ -44,3 +45,9 @@ services:
     tty: true
     init: true
     entrypoint: ["node", "dist/index.js"]
+    networks:
+      - shared_network
+networks:
+  shared_network:
+    external: true
+    name: shared_network
