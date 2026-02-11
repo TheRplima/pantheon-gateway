@@ -1,0 +1,44 @@
+version: "2.5"
+# Pantheon Schema L0 (v2.5)
+# Data contracts for Task Containers and Documents
+
+{{AGENT_SCHEMA}}
+
+inputs:
+  # The Task Container Interface
+  task_container:
+    type: directory
+    name_pattern: "task_[ID]"
+    required_contents:
+      - "BRIEF_[ID]_[DATE].md"
+  
+  # The Document Trio (Mandatory per protocol)
+  documents:
+    brief:
+      type: markdown
+      naming: "BRIEF_[ID]_[DATE].md"
+      required_fields:
+        - id: "string (must match folder ID)"
+        - requester: "string (agent_id)"
+        - description: "string"
+    
+    plan:
+      type: markdown
+      naming: "PLAN_[ID]_[DATE].md"
+      required_fields:
+        - id: "string"
+        - strategy: "list"
+    
+    report:
+      type: markdown
+      naming: "REPORT_[ID]_[DATE].md"
+      required_fields:
+        - id: "string"
+        - payload: "any"
+
+  # Heartbeat Context
+  heartbeat:
+    type: object
+    properties:
+      timestamp: { type: "string", format: "iso8601" }
+      environment: { type: "string", enum: ["production", "development"] }

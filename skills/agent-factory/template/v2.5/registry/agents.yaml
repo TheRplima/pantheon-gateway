@@ -1,0 +1,26 @@
+# registry/agents.yaml — Pantheon v2.5 (Normalized)
+
+version: 2.5
+last_updated: {{DATE}}
+
+agents:
+  - id: operator
+    type: ENTRY
+    domain: system_operation
+    status: active
+    workspace: /home/openclaw/workspaces/operator
+    capabilities:
+      - human_interface
+      - brief_creation
+
+  - id: nexus
+    type: ORCHESTRATOR
+    domain: orchestration
+    status: active
+    workspace: /home/openclaw/workspaces/nexus
+    capabilities:
+      - task_routing
+      - governance_enforcement
+
+  # Specialists injected via orchestration model
+{{AGENT_REGISTRY_LIST}}

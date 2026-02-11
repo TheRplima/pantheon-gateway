@@ -1,0 +1,50 @@
+version: "2.5"
+# Pantheon Gates L0 (v2.5)
+# Mandatory security and structure checks before proceeding
+
+{{AGENT_GATES}}
+
+gates:
+
+  # === FOLDER STRUCTURE GATES ===
+  - id: gate_invalid_container
+    name: "Task Container Validation"
+    severity: critical
+    trigger: "Folder not named task_[ID] in inbox"
+    action: halt
+    message: "Protocol Violation: Tasks must arrive as 'task_[ID]' folders."
+
+  - id: gate_id_header_missing
+    name: "Document ID Header Validation"
+    severity: critical
+    trigger: "BRIEF/PLAN/REPORT missing the [ID] header on first line"
+    action: halt
+    message: "Protocol Violation: Document header missing mandatory Task ID."
+
+  # === NAMING CONVENTION GATES ===
+  - id: gate_naming_date_missing
+    name: "Naming Convention Date Validation"
+    severity: high
+    trigger: "File name does not match DOCUMENT_[ID]_[DATE].md"
+    action: warn
+    message: "Governance Warning: Files should include [DATE] for traceability."
+
+  # === SECURITY GATES ===
+  - id: gate_silent_mode
+    name: "Strict Heartbeat Silence"
+    severity: medium
+    trigger: "Attempting to message user without active task folder"
+    action: halt
+    message: "Governance Block: Absolute silence mandated during idle heartbeats."
+
+  - id: gate_unauthorized_move
+    name: "Atomic Folder Movement"
+    severity: high
+    trigger: "Attempting to move individual files instead of the task_[ID] container"
+    action: halt
+    message: "Protocol Violation: Tasks must be moved as atomic folder containers."
+
+# Gate actions:
+# - halt: Stop immediately
+# - warn: Log and proceed
+# - confirm: Wait for user

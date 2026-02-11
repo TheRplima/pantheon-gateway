@@ -1,0 +1,86 @@
+version: "2.5"
+# Pantheon L0 Universal Rules - Task Container Model (v2.5)
+# Core state machine for folder-based IATP lifecycle
+
+{{AGENT_RULES}}
+
+# Default L0 Flow (Used if AGENT_RULES is empty or appended)
+# Note: If model provides AGENT_RULES, this section can be ignored or complemented.
+
+states:
+  - idle          # Awaiting task container in inbox
+  - validating    # checking integrity of task_[ID]
+  - planning      # creating PLAN_[ID]_[DATE].md
+  - executing     # performing the technical task
+  - reporting     # generating REPORT_[ID]_[DATE].md
+  - finalizing    # moving container to done/cancelled
+
+initial_state: idle
+
+transitions:
+
+  # === INBOX HANDLING ===
+  - from: idle
+    to: validating
+    trigger: folder_received_in_inbox
+    conditions:
+      - folder_name_matches: "task_[ID]"
+    actions:
+      - move_folder: "inbox/task_[ID] -> active/task_[ID]"
+      - read_document: "BRIEF_[ID]_[DATE].md"
+
+  # === VALIDATION ===
+  - from: validating
+    to: planning
+    trigger: brief_valid
+    actions:
+      - log_decision: "[ID] validated. Proceeding to plan."
+
+  - from: validating
+    to: finalizing
+    trigger: brief_invalid
+    actions:
+      - create_document: "REPORT_[ID]_[DATE].md" (Failure summary)
+      - move_folder: "active/task_[ID] -> cancelled/task_[ID]"
+      - notify_sender: "Task [ID] invalid."
+
+  # === PLANNING ===
+  - from: planning
+    to: executing
+    trigger: plan_created
+    conditions:
+      - file_exists: "active/task_[ID]/PLAN_[ID]_[DATE].md"
+      - header_contains: "[ID]"
+    actions:
+      - log_decision: "[ID] Planning complete."
+
+  # === EXECUTION ===
+  - from: executing
+    to: reporting
+    trigger: execution_complete
+    actions:
+      - prepare_results
+
+  # === REPORTING ===
+  - from: reporting
+    to: finalizing
+    trigger: report_generated
+    conditions:
+      - file_exists: "active/task_[ID]/REPORT_[ID]_[DATE].md"
+    actions:
+      - copy_to_requester: "REPORT_[ID]_[DATE].md"
+      - log_decision: "[ID] Report delivered."
+
+  # === FINALIZATION ===
+  - from: finalizing
+    to: idle
+    trigger: cleanup_complete
+    actions:
+      - move_folder: "active/task_[ID] -> done/task_[ID]"
+      - clear_local_buffers
+
+# Mandatory protocols per template (Relative to task_[ID] container)
+protocols:
+  brief: "BRIEF_[ID]_[DATE].md"
+  plan: "PLAN_[ID]_[DATE].md"
+  report: "REPORT_[ID]_[DATE].md"

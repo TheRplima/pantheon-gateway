@@ -1,0 +1,27 @@
+{
+  "task_id": "task_[ID]",
+  "current_state": "received",
+  "requester_agent": "[requester-agent-id]",
+  "owner_agent": "[owner-agent-id]",
+  "created_at": "[ISO8601 timestamp]",
+  "last_transition_at": "[ISO8601 timestamp]",
+  "requires_plan_approval": false,
+  "requires_exec_approval": false,
+  "locks": {
+    "plan": false,
+    "exec": false
+  },
+  "signatures": {
+    "plan": null,
+    "exec": null
+  },
+  "history": [
+    {
+      "at": "[ISO8601 timestamp]",
+      "from": null,
+      "to": "received",
+      "by": "[owner-agent-id]",
+      "note": "container_created"
+    }
+  ]
+}
