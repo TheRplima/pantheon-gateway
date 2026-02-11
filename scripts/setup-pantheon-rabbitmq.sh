@@ -23,7 +23,10 @@ urlenc_vhost() {
 
 api_put() {
   local path="$1"
-  local body="${2:-{}}"
+  local body="${2-}"
+  if [[ -z "$body" ]]; then
+    body='{}'
+  fi
   curl -fsS -u "$RABBITMQ_USER:$RABBITMQ_PASS" \
     -H 'content-type: application/json' \
     -X PUT "$RABBITMQ_API_URL$path" \
@@ -32,7 +35,10 @@ api_put() {
 
 api_post() {
   local path="$1"
-  local body="${2:-{}}"
+  local body="${2-}"
+  if [[ -z "$body" ]]; then
+    body='{}'
+  fi
   curl -fsS -u "$RABBITMQ_USER:$RABBITMQ_PASS" \
     -H 'content-type: application/json' \
     -X POST "$RABBITMQ_API_URL$path" \
@@ -49,7 +55,10 @@ declare_exchange() {
 declare_queue() {
   local encoded_vhost="$1"
   local queue="$2"
-  local args_json="${3:-{}}"
+  local args_json="${3-}"
+  if [[ -z "$args_json" ]]; then
+    args_json='{}'
+  fi
   api_put "/queues/${encoded_vhost}/${queue}" "{\"durable\":true,\"auto_delete\":false,\"arguments\":${args_json}}"
 }
 
