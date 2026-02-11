@@ -3,15 +3,8 @@ import Ajv2020Pkg from "ajv/dist/2020.js";
 import fs from "node:fs";
 import path from "node:path";
 
-export type PantheonFactoryLog = {
-  info: (msg: string) => void;
-  warn: (msg: string) => void;
-  error: (msg: string) => void;
-  debug?: (msg: string) => void;
-};
-
-export type AgentCreateRequestedEnvelope = {
-  event_name: "agent.create.requested";
+export type AgentCreateCompletedEnvelope = {
+  event_name: "agent.create.completed";
   event_version: 1;
   operation_id: string;
   occurred_at: string;
@@ -20,26 +13,33 @@ export type AgentCreateRequestedEnvelope = {
   user_id: string;
   generation: number;
   payload: {
-    desired_state: "active" | "inactive";
-    agent_name: string;
-    agent_type: "ENTRY" | "SERVICE" | "ORCHESTRATOR";
-    domain: string;
-    template: {
-      key: string;
-      version: string;
-      checksum?: string;
-    };
-    model: {
-      key: string;
-      version: string;
-      type: "authoring" | "execution";
-    };
     paths: {
       active_workspace_path: string;
       disabled_workspace_path: string;
       current_workspace_path: string;
     };
-    requested_by?: string;
+    template: {
+      key: string;
+      version: string;
+      checksum: string;
+    };
+    model: {
+      key: string;
+      version: string;
+      checksum: string;
+    };
+    workspace_checks: {
+      exists: boolean;
+      bootstrap_files_present: Array<
+        | "AGENTS.md"
+        | "SOUL.md"
+        | "TOOLS.md"
+        | "IDENTITY.md"
+        | "USER.md"
+        | "HEARTBEAT.md"
+        | "BOOTSTRAP.md"
+      >;
+    };
   };
 };
 
@@ -59,19 +59,19 @@ function normalizeEnvelopeRef(schema: unknown, envelopeId: string): unknown {
   return cloned;
 }
 
-export function resolveContractsSchemaDir(cwd = process.cwd()): string {
+function resolveContractsSchemaDir(cwd = process.cwd()): string {
   return path.resolve(cwd, "packages/contracts/schemas/v1");
 }
 
-export function buildAgentCreateRequestedValidator(params?: {
+export function buildAgentCreateCompletedValidator(params?: {
   cwd?: string;
-}): ValidateFunction<AgentCreateRequestedEnvelope> {
+}): ValidateFunction<AgentCreateCompletedEnvelope> {
   const schemaDir = resolveContractsSchemaDir(params?.cwd);
   const envelopeSchemaPath = path.join(schemaDir, "envelope.schema.json");
-  const createSchemaPath = path.join(schemaDir, "agent.create.requested.schema.json");
+  const completedSchemaPath = path.join(schemaDir, "agent.create.completed.schema.json");
 
   const envelopeSchema = readJsonFile(envelopeSchemaPath) as { $id?: string };
-  const createRequestedSchema = readJsonFile(createSchemaPath);
+  const completedSchema = readJsonFile(completedSchemaPath);
 
   const Ajv2020Ctor = Ajv2020Pkg as unknown as new (opts?: object) => {
     addSchema: (schema: unknown, key?: string) => void;
@@ -86,26 +86,22 @@ export function buildAgentCreateRequestedValidator(params?: {
   const envelopeId = envelopeSchema.$id ?? "pantheon.contracts.v1.envelope";
   ajv.addSchema(envelopeSchema, envelopeId);
 
-  const normalizedSchema = normalizeEnvelopeRef(createRequestedSchema, envelopeId);
-  return ajv.compile<AgentCreateRequestedEnvelope>(normalizedSchema);
+  const normalizedSchema = normalizeEnvelopeRef(completedSchema, envelopeId);
+  return ajv.compile<AgentCreateCompletedEnvelope>(normalizedSchema);
 }
 
-export function parseEnvelopeJson(payload: string): unknown {
-  return JSON.parse(payload);
-}
-
-export function validateAgentCreateRequestedEnvelope(
-  validator: ValidateFunction<AgentCreateRequestedEnvelope>,
+export function validateAgentCreateCompletedEnvelope(
+  validator: ValidateFunction<AgentCreateCompletedEnvelope>,
   envelope: unknown,
-): { ok: true; envelope: AgentCreateRequestedEnvelope } | { ok: false; errors: string[] } {
+): { ok: true; envelope: AgentCreateCompletedEnvelope } | { ok: false; errors: string[] } {
   const valid = validator(envelope);
   if (valid) {
-    return { ok: true, envelope: envelope as AgentCreateRequestedEnvelope };
+    return { ok: true, envelope: envelope as AgentCreateCompletedEnvelope };
   }
 
   const errors = (validator.errors ?? []).map((err) => {
-    const path = err.instancePath || "<root>";
-    return `${path}: ${err.message ?? "validation error"}`;
+    const instancePath = err.instancePath || "<root>";
+    return `${instancePath}: ${err.message ?? "validation error"}`;
   });
 
   return { ok: false, errors };

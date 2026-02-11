@@ -1,17 +1,41 @@
 import { isTruthyEnvValue } from "../../infra/env.js";
 import {
+  PANTHEON_EVENT_CREATE_COMPLETED,
+  PANTHEON_LIFECYCLE_EXCHANGE,
+  PANTHEON_QUEUE_FACTORY,
+} from "../lifecycle/rabbitmq-routing.js";
+import {
+  buildAgentCreateCompletedValidator,
+  validateAgentCreateCompletedEnvelope,
+  type AgentCreateCompletedEnvelope,
+} from "./agent-create-completed.js";
+import {
   buildAgentCreateRequestedValidator,
   parseEnvelopeJson,
+  type AgentCreateRequestedEnvelope,
   type PantheonFactoryLog,
   validateAgentCreateRequestedEnvelope,
 } from "./agent-create-requested.js";
 import { createRabbitManagementApiClient } from "./management-api.js";
+import { provisionWorkspaceFromCreateRequested } from "./workspace-provision.js";
 
-const FACTORY_QUEUE = "q.agent.factory";
+const FACTORY_QUEUE = PANTHEON_QUEUE_FACTORY;
 
 export type PantheonFactoryConsumerHandle = {
   stop: () => Promise<void>;
 };
+
+export type PantheonFactoryConsumerDeps = {
+  provisionWorkspace: typeof provisionWorkspaceFromCreateRequested;
+  nowIso: () => string;
+};
+
+function defaultDeps(): PantheonFactoryConsumerDeps {
+  return {
+    provisionWorkspace: provisionWorkspaceFromCreateRequested,
+    nowIso: () => new Date().toISOString(),
+  };
+}
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -39,7 +63,9 @@ function resolvePollingIntervalMs(env: NodeJS.ProcessEnv = process.env): number 
   return parsed;
 }
 
-function validateRequiredEnv(env: NodeJS.ProcessEnv):
+function validateRequiredEnv(
+  env: NodeJS.ProcessEnv,
+):
   | { ok: true; config: { apiUrl: string; user: string; pass: string; vhost: string } }
   | { ok: false; reason: string } {
   const apiUrl = env.RABBITMQ_API_URL?.trim();
@@ -68,12 +94,51 @@ function validateRequiredEnv(env: NodeJS.ProcessEnv):
   };
 }
 
+function buildCreateCompletedEnvelope(params: {
+  nowIso: string;
+  producer: string;
+  source: AgentCreateRequestedEnvelope;
+  provisionResult: ReturnType<typeof provisionWorkspaceFromCreateRequested>;
+}): AgentCreateCompletedEnvelope {
+  const { source, provisionResult } = params;
+
+  return {
+    event_name: "agent.create.completed",
+    event_version: 1,
+    operation_id: source.operation_id,
+    occurred_at: params.nowIso,
+    producer: params.producer,
+    agent_id: source.agent_id,
+    user_id: source.user_id,
+    generation: source.generation,
+    payload: {
+      paths: source.payload.paths,
+      template: {
+        key: source.payload.template.key,
+        version: source.payload.template.version,
+        checksum: provisionResult.templateChecksum,
+      },
+      model: {
+        key: source.payload.model.key,
+        version: source.payload.model.version,
+        checksum: provisionResult.modelChecksum,
+      },
+      workspace_checks: {
+        exists: provisionResult.workspaceExists,
+        bootstrap_files_present: provisionResult.bootstrapFilesPresent,
+      },
+    },
+  };
+}
+
 export function startPantheonFactoryConsumer(params: {
   log: PantheonFactoryLog;
   env?: NodeJS.ProcessEnv;
+  deps?: Partial<PantheonFactoryConsumerDeps>;
 }): PantheonFactoryConsumerHandle | null {
   const env = params.env ?? process.env;
   const { log } = params;
+  const deps = { ...defaultDeps(), ...params.deps };
 
   if (!isPantheonFactoryConsumerEnabled(env)) {
     return null;
@@ -85,13 +150,16 @@ export function startPantheonFactoryConsumer(params: {
     return null;
   }
 
-  const validator = buildAgentCreateRequestedValidator();
+  const createRequestedValidator = buildAgentCreateRequestedValidator();
+  const createCompletedValidator = buildAgentCreateCompletedValidator();
   const pollingMs = resolvePollingIntervalMs(env);
   const client = createRabbitManagementApiClient({
     baseUrl: envCheck.config.apiUrl,
     user: envCheck.config.user,
     pass: envCheck.config.pass,
   });
+
+  const producerName = env.PANTHEON_FACTORY_PRODUCER?.trim() || "gateway-factory";
 
   let stopping = false;
   const loopPromise = (async () => {
@@ -112,7 +180,10 @@ export function startPantheonFactoryConsumer(params: {
             const envelopeRaw = parseEnvelopeJson(
               decodePayloadAsString(message.payload, message.payload_encoding),
             );
-            const validated = validateAgentCreateRequestedEnvelope(validator, envelopeRaw);
+            const validated = validateAgentCreateRequestedEnvelope(
+              createRequestedValidator,
+              envelopeRaw,
+            );
             if (!validated.ok) {
               log.warn(
                 `pantheon factory consumer rejected message: ${validated.errors.join(" | ")}`,
@@ -125,7 +196,35 @@ export function startPantheonFactoryConsumer(params: {
               `pantheon factory consumer accepted: operation_id=${envelope.operation_id} agent_id=${envelope.agent_id}`,
             );
 
-            // TODO: invoke workspace rendering/reconciliation pipeline (agent-factory integration).
+            const provisionResult = deps.provisionWorkspace(envelope);
+
+            const completedEnvelope = buildCreateCompletedEnvelope({
+              nowIso: deps.nowIso(),
+              producer: producerName,
+              source: envelope,
+              provisionResult,
+            });
+
+            const completedValidation = validateAgentCreateCompletedEnvelope(
+              createCompletedValidator,
+              completedEnvelope,
+            );
+            if (!completedValidation.ok) {
+              throw new Error(
+                `agent.create.completed validation failed: ${completedValidation.errors.join(" | ")}`,
+              );
+            }
+
+            await client.publishMessage({
+              vhost: envCheck.config.vhost,
+              exchange: PANTHEON_LIFECYCLE_EXCHANGE,
+              routingKey: PANTHEON_EVENT_CREATE_COMPLETED,
+              payload: JSON.stringify(completedEnvelope),
+            });
+
+            log.info(
+              `pantheon factory consumer published ${PANTHEON_EVENT_CREATE_COMPLETED}: operation_id=${envelope.operation_id} agent_id=${envelope.agent_id}`,
+            );
           } catch (err) {
             log.error(`pantheon factory consumer failed to process message: ${String(err)}`);
           }
@@ -149,3 +248,7 @@ export function startPantheonFactoryConsumer(params: {
     },
   };
 }
+
+export const __testOnly = {
+  buildCreateCompletedEnvelope,
+};

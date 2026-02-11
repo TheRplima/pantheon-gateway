@@ -4,6 +4,12 @@ export type RabbitManagementApiClient = {
     queue: string;
     count?: number;
   }) => Promise<Array<{ payload: unknown; payload_encoding?: string; routing_key?: string }>>;
+  publishMessage: (params: {
+    vhost: string;
+    exchange: string;
+    routingKey: string;
+    payload: unknown;
+  }) => Promise<void>;
 };
 
 function encodeVhost(vhost: string): string {
@@ -61,6 +67,37 @@ export function createRabbitManagementApiClient(params: {
       }>;
 
       return Array.isArray(data) ? data : [];
+    },
+
+    async publishMessage({ vhost, exchange, routingKey, payload }) {
+      const encodedVhost = encodeVhost(vhost);
+      const url = `${baseUrl}/exchanges/${encodedVhost}/${exchange}/publish`;
+
+      const response = await fetchImpl(url, {
+        method: "POST",
+        headers: {
+          Authorization: authHeader,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          properties: {},
+          routing_key: routingKey,
+          payload,
+          payload_encoding: "string",
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => "");
+        throw new Error(`rabbitmq publish failed: HTTP ${response.status} ${text}`.trim());
+      }
+
+      const data = (await response.json()) as { routed?: boolean };
+      if (!data.routed) {
+        throw new Error(
+          `rabbitmq publish not routed: exchange=${exchange} routingKey=${routingKey}`,
+        );
+      }
     },
   };
 }

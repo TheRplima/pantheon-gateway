@@ -566,6 +566,8 @@ importers:
         specifier: workspace:*
         version: link:../..
 
+  packages/contracts: {}
+
   packages/moltbot:
     dependencies:
       openclaw:
