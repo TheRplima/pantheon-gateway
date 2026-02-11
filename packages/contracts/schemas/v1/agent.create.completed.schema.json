@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pantheon.contracts.v1.agent.create.completed",
+  "allOf": [
+    {
+      "$ref": "./envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "event_name": {
+          "const": "agent.create.completed"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "paths",
+            "template",
+            "model",
+            "workspace_checks"
+          ],
+          "properties": {
+            "paths": {
+              "type": "object",
+              "required": ["active_workspace_path", "disabled_workspace_path", "current_workspace_path"],
+              "properties": {
+                "active_workspace_path": { "type": "string", "minLength": 1 },
+                "disabled_workspace_path": { "type": "string", "minLength": 1 },
+                "current_workspace_path": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            },
+            "template": {
+              "type": "object",
+              "required": ["key", "version", "checksum"],
+              "properties": {
+                "key": { "type": "string", "minLength": 1 },
+                "version": { "type": "string", "minLength": 1 },
+                "checksum": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            },
+            "model": {
+              "type": "object",
+              "required": ["key", "version", "checksum"],
+              "properties": {
+                "key": { "type": "string", "minLength": 1 },
+                "version": { "type": "string", "minLength": 1 },
+                "checksum": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            },
+            "workspace_checks": {
+              "type": "object",
+              "required": ["exists", "bootstrap_files_present"],
+              "properties": {
+                "exists": { "type": "boolean" },
+                "bootstrap_files_present": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "AGENTS.md",
+                      "SOUL.md",
+                      "TOOLS.md",
+                      "IDENTITY.md",
+                      "USER.md",
+                      "HEARTBEAT.md",
+                      "BOOTSTRAP.md"
+                    ]
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}

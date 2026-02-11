@@ -1,0 +1,26 @@
+{
+  "event_name": "agent.registered",
+  "event_version": 1,
+  "operation_id": "9efea3d2-67a2-4a12-9361-11d188f90e38",
+  "correlation_id": "9efea3d2-67a2-4a12-9361-11d188f90e38",
+  "occurred_at": "2026-02-11T15:00:12Z",
+  "producer": "pantheon-gateway",
+  "agent_id": "4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8",
+  "user_id": "6a44704c-2d51-4b8a-aab7-8b8857ccb5bb",
+  "generation": 1,
+  "payload": {
+    "openclaw_config": {
+      "id": "4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8",
+      "workspace": "/home/node/workspaces/6a44704c-2d51-4b8a-aab7-8b8857ccb5bb/4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8",
+      "model": "github-copilot/gpt-4.1",
+      "heartbeat": {
+        "every": "2m"
+      }
+    },
+    "paths": {
+      "active_workspace_path": "/home/node/workspaces/6a44704c-2d51-4b8a-aab7-8b8857ccb5bb/4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8",
+      "disabled_workspace_path": "/home/node/workspaces/6a44704c-2d51-4b8a-aab7-8b8857ccb5bb/disabled/4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8",
+      "current_workspace_path": "/home/node/workspaces/6a44704c-2d51-4b8a-aab7-8b8857ccb5bb/4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8"
+    }
+  }
+}

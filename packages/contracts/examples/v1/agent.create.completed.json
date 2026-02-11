@@ -1,0 +1,40 @@
+{
+  "event_name": "agent.create.completed",
+  "event_version": 1,
+  "operation_id": "9efea3d2-67a2-4a12-9361-11d188f90e38",
+  "correlation_id": "9efea3d2-67a2-4a12-9361-11d188f90e38",
+  "occurred_at": "2026-02-11T15:00:08Z",
+  "producer": "pantheon-factory",
+  "agent_id": "4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8",
+  "user_id": "6a44704c-2d51-4b8a-aab7-8b8857ccb5bb",
+  "generation": 1,
+  "payload": {
+    "paths": {
+      "active_workspace_path": "/home/node/workspaces/6a44704c-2d51-4b8a-aab7-8b8857ccb5bb/4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8",
+      "disabled_workspace_path": "/home/node/workspaces/6a44704c-2d51-4b8a-aab7-8b8857ccb5bb/disabled/4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8",
+      "current_workspace_path": "/home/node/workspaces/6a44704c-2d51-4b8a-aab7-8b8857ccb5bb/4af53a2c-e5dc-4e5f-8afe-2bd596fd4ec8"
+    },
+    "template": {
+      "key": "agent-template-v2.5",
+      "version": "2.5.0",
+      "checksum": "sha256:template-checksum"
+    },
+    "model": {
+      "key": "nexus-core",
+      "version": "1.0.0",
+      "checksum": "sha256:model-checksum"
+    },
+    "workspace_checks": {
+      "exists": true,
+      "bootstrap_files_present": [
+        "AGENTS.md",
+        "SOUL.md",
+        "TOOLS.md",
+        "IDENTITY.md",
+        "USER.md",
+        "HEARTBEAT.md",
+        "BOOTSTRAP.md"
+      ]
+    }
+  }
+}

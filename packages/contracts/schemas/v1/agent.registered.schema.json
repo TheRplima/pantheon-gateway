@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pantheon.contracts.v1.agent.registered",
+  "allOf": [
+    {
+      "$ref": "./envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "event_name": {
+          "const": "agent.registered"
+        },
+        "payload": {
+          "type": "object",
+          "required": ["openclaw_config", "paths"],
+          "properties": {
+            "openclaw_config": {
+              "type": "object",
+              "required": ["id", "workspace", "model"],
+              "properties": {
+                "id": { "type": "string", "format": "uuid" },
+                "workspace": { "type": "string", "minLength": 1 },
+                "model": { "type": "string", "minLength": 1 },
+                "heartbeat": {
+                  "type": "object",
+                  "properties": {
+                    "every": { "type": "string", "minLength": 1 }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "paths": {
+              "type": "object",
+              "required": ["active_workspace_path", "disabled_workspace_path", "current_workspace_path"],
+              "properties": {
+                "active_workspace_path": { "type": "string", "minLength": 1 },
+                "disabled_workspace_path": { "type": "string", "minLength": 1 },
+                "current_workspace_path": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}

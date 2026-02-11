@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pantheon.contracts.v1.agent.create.requested",
+  "allOf": [
+    {
+      "$ref": "./envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "event_name": {
+          "const": "agent.create.requested"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "desired_state",
+            "agent_name",
+            "agent_type",
+            "domain",
+            "template",
+            "model",
+            "paths"
+          ],
+          "properties": {
+            "desired_state": {
+              "type": "string",
+              "enum": ["active", "inactive"]
+            },
+            "agent_name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "agent_type": {
+              "type": "string",
+              "enum": ["ENTRY", "SERVICE", "ORCHESTRATOR"]
+            },
+            "domain": {
+              "type": "string",
+              "minLength": 1
+            },
+            "template": {
+              "type": "object",
+              "required": ["key", "version"],
+              "properties": {
+                "key": { "type": "string", "minLength": 1 },
+                "version": { "type": "string", "minLength": 1 },
+                "checksum": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            },
+            "model": {
+              "type": "object",
+              "required": ["key", "version", "type"],
+              "properties": {
+                "key": { "type": "string", "minLength": 1 },
+                "version": { "type": "string", "minLength": 1 },
+                "type": { "type": "string", "enum": ["authoring", "execution"] }
+              },
+              "additionalProperties": false
+            },
+            "paths": {
+              "type": "object",
+              "required": ["active_workspace_path", "disabled_workspace_path", "current_workspace_path"],
+              "properties": {
+                "active_workspace_path": { "type": "string", "minLength": 1 },
+                "disabled_workspace_path": { "type": "string", "minLength": 1 },
+                "current_workspace_path": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            },
+            "requested_by": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}

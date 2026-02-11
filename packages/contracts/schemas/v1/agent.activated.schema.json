@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pantheon.contracts.v1.agent.activated",
+  "allOf": [
+    {
+      "$ref": "./envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "event_name": {
+          "const": "agent.activated"
+        },
+        "payload": {
+          "type": "object",
+          "required": ["runtime", "paths"],
+          "properties": {
+            "runtime": {
+              "type": "object",
+              "required": ["status", "activated_at"],
+              "properties": {
+                "status": { "type": "string", "const": "active" },
+                "activated_at": { "type": "string", "format": "date-time" },
+                "gateway_instance": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            },
+            "paths": {
+              "type": "object",
+              "required": ["active_workspace_path", "disabled_workspace_path", "current_workspace_path"],
+              "properties": {
+                "active_workspace_path": { "type": "string", "minLength": 1 },
+                "disabled_workspace_path": { "type": "string", "minLength": 1 },
+                "current_workspace_path": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}
