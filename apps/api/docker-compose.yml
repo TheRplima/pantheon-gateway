@@ -1,0 +1,64 @@
+services:
+  cp-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        user: www-data
+    container_name: pgw-cp-api
+    command: php artisan serve --host=0.0.0.0 --port=80
+    ports:
+      - "8088:80"
+    volumes:
+      - ./:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      cp-api-db:
+        condition: service_healthy
+      cp-api-rabbitmq:
+        condition: service_healthy
+      cp-api-redis:
+        condition: service_started
+
+  cp-api-db:
+    image: postgres:16-alpine
+    container_name: pgw-cp-api-db
+    environment:
+      POSTGRES_DB: pantheon_api
+      POSTGRES_USER: pantheon
+      POSTGRES_PASSWORD: pantheon
+    ports:
+      - "55433:5432"
+    volumes:
+      - cp-api-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pantheon -d pantheon_api"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  cp-api-rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: pgw-cp-api-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /pantheon
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  cp-api-redis:
+    image: redis:7-alpine
+    container_name: pgw-cp-api-redis
+    ports:
+      - "6380:6379"
+
+volumes:
+  cp-api-db-data:
