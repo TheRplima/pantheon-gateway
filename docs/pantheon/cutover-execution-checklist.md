@@ -15,9 +15,9 @@ Referência principal:
 
 ## D0 — Importação e bootstrap
 
-1. [ ] Criar branch de cutover (`cutover/pantheon-api-import`)  
+1. [x] Criar branch de cutover (`cutover/pantheon-api-import`)  
         Owner: `API` | ETA: 15m  
-        Evidência: branch criada e compartilhada.
+        Evidência: decisão operacional registrada: execução consolidada na branch `development` com histórico de commits do cutover (sem branch dedicada).
 
 2. [x] Importar API para `apps/api`  
         Owner: `API` | ETA: 1h  
@@ -133,17 +133,17 @@ Go/No-Go D4:
 
 ## D5 — Cutover formal
 
-1. [ ] Marcar este repo como source of truth oficial (API/contracts/docs)  
+1. [x] Marcar este repo como source of truth oficial (API/contracts/docs)  
         Owner: `DOC` | ETA: 30m  
-        Evidência: documentação principal atualizada.
+        Evidência: formalização registrada em `docs/pantheon/cutover-formalization-2026-02-14.md` e referenciada no plano/blueprint.
 
-2. [ ] Congelar evolução da API no repo antigo (read-only para esse domínio)  
+2. [x] Congelar evolução da API no repo antigo (read-only para esse domínio)  
         Owner: `OPS` | ETA: 30m  
-        Evidência: comunicado + política registrada.
+        Evidência: política registrada no documento de formalização (repo legado como referência histórica somente).
 
-3. [ ] Fechar checklist de aceite final  
+3. [x] Fechar checklist de aceite final  
         Owner: `API` + `GW` + `OPS` + `DOC` | ETA: 45m  
-        Evidência: todos critérios de Go atendidos.
+        Evidência: critérios finais marcados como atendidos + smoke local validado com PASS.
 
 Go/No-Go D5:
 
@@ -154,9 +154,9 @@ Go/No-Go D5:
 
 ## Critérios finais de aceite (resumo)
 
-1. [ ] API importada e estável em `apps/api`.
-2. [ ] P0/P1 da auditoria resolvidos.
-3. [ ] Fluxo `agent.create.requested -> agent.create.completed` validado.
-4. [ ] Tracking de operação por `operation_id` disponível.
-5. [ ] Logs e runbook operacionais prontos.
-6. [ ] Source of truth oficialmente consolidado neste repositório.
+1. [x] API importada e estável em `apps/api`.
+2. [x] P0/P1 da auditoria resolvidos.
+3. [x] Fluxo `agent.create.requested -> agent.create.completed` validado.
+4. [x] Tracking de operação por `operation_id` disponível.
+5. [x] Logs e runbook operacionais prontos.
+6. [x] Source of truth oficialmente consolidado neste repositório.

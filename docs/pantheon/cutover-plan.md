@@ -112,6 +112,11 @@ Mínimo:
 
 - Não há mais PRs de evolução da API no repo antigo.
 
+### Registro de execução
+
+- Data de formalização: **2026-02-14**.
+- Registro operacional: `docs/pantheon/cutover-formalization-2026-02-14.md`.
+
 ---
 
 ## Critérios Go/No-Go

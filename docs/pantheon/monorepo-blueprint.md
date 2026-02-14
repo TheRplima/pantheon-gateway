@@ -4,6 +4,13 @@
 
 Adopt a single repository layout for Pantheon services, with clear ownership boundaries and shared event contracts, while keeping the current gateway runtime stable during migration.
 
+## Source Of Truth (Current)
+
+For Pantheon domain changes (API/contracts/docs), this repository is the only authoritative source.
+
+- Formalization record: `docs/pantheon/cutover-formalization-2026-02-14.md`
+- Legacy repo status: historical reference only
+
 ## Target Layout
 
 - `apps/gateway`: existing OpenClaw gateway codebase (current root project).
