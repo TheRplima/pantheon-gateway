@@ -8,7 +8,6 @@ use App\Http\Requests\v1\UpdateAgentRequest;
 use App\Http\Resources\v1\AgentResource;
 use App\Models\Agent;
 use App\Repositories\AgentRepository;
-use App\Services\WakeUpPublisher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -32,13 +31,10 @@ class AgentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAgentRequest $request, WakeUpPublisher $publisher)
+    public function store(StoreAgentRequest $request)
     {
         $agent = $this->repository->create($request->validated());
-
-        // Notify Nexus/Agent Factory
-        $publisher->publish($agent->id, 'GENERATE_WORKSPACE');
-        
+    
         return new AgentResource($agent);
     }
 

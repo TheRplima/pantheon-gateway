@@ -15,7 +15,6 @@ Route::prefix('v1')->group(function () {
     Route::post('agents', [AgentController::class, 'store']); // Public for Dashboard Alpha
     Route::get('tasks', [TaskController::class, 'index']);
     Route::get('tasks/{task}', [TaskController::class, 'show']);
-    Route::post('tasks', [TaskController::class, 'store']); // Public for Dashboard Alpha
 
     // Protected Routes
     Route::middleware('auth:api')->group(function () {

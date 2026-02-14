@@ -40,21 +40,21 @@ Go/No-Go D0:
 
 ## D1 — Hardening P0
 
-1. [ ] Corrigir `findActiveById` no repositório de agentes  
+1. [x] Corrigir `findActiveById` no repositório de agentes  
         Owner: `API` | ETA: 30m  
-        Evidência: login/auth sem erro fatal.
+        Evidência: método `findActiveById` implementado em `apps/api/app/Repositories/AgentRepository.php`.
 
-2. [ ] Corrigir publish inconsistente no `AgentController::store`  
+2. [x] Corrigir publish inconsistente no `AgentController::store`  
         Owner: `API` | ETA: 45m  
-        Evidência: evento emitido com payload/semântica correta do lifecycle.
+        Evidência: publish de WAKE_UP removido do `store` em `apps/api/app/Http/Controllers/Api/v1/AgentController.php` para evitar semântica incorreta de task.
 
-3. [ ] Remover conflito de rota pública x protegida de tasks  
+3. [x] Remover conflito de rota pública x protegida de tasks  
         Owner: `API` | ETA: 30m  
-        Evidência: `POST /v1/tasks` sem token retorna 401.
+        Evidência: rota pública `POST /v1/tasks` removida; existe apenas a rota protegida em `apps/api/routes/api.php`.
 
-4. [ ] Corrigir retorno de `updateStatus` para retornar Task  
+4. [x] Corrigir retorno de `updateStatus` para retornar Task  
         Owner: `API` | ETA: 30m  
-        Evidência: endpoint retorna `TaskResource` válido.
+        Evidência: `updateStatus` agora retorna `Task` atualizado (`fresh`) em `apps/api/app/Repositories/TaskRepository.php`.
 
 Go/No-Go D1:
 

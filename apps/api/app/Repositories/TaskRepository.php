@@ -34,10 +34,12 @@ class TaskRepository
 
     public function updateStatus(Task $task, string $status)
     {
-        return $task->update([
+        $task->update([
             'current_state' => $status,
             'last_transition_at' => now(),
         ]);
+
+        return $task->fresh(['contents', 'validators', 'signatures']);
     }
 
     public function addContent(Task $task, string $type, string $body)

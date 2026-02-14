@@ -16,6 +16,13 @@ class AgentRepository
         return Agent::findOrFail($id);
     }
 
+    public function findActiveById(string $id): ?Agent
+    {
+        return Agent::where('id', $id)
+            ->where('is_active', true)
+            ->first();
+    }
+
     public function create(array $data)
     {
         return Agent::create($data);
