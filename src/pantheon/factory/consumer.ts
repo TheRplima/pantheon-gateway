@@ -51,6 +51,13 @@ function decodePayloadAsString(payload: unknown, encoding?: string): string {
   return JSON.stringify(payload);
 }
 
+function formatLifecycleLog(fields: Record<string, string | number | boolean | undefined>): string {
+  const parts = Object.entries(fields)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${String(value)}`);
+  return `pantheon.lifecycle ${parts.join(" ")}`;
+}
+
 export function isPantheonFactoryConsumerEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
   return isTruthyEnvValue(env.PANTHEON_FACTORY_CONSUMER_ENABLED);
 }
@@ -179,21 +186,31 @@ export function startPantheonFactoryConsumer(params: {
           try {
             const envelopeRaw = parseEnvelopeJson(
               decodePayloadAsString(message.payload, message.payload_encoding),
-            );
+            ) as { event_name?: string };
             const validated = validateAgentCreateRequestedEnvelope(
               createRequestedValidator,
               envelopeRaw,
             );
             if (!validated.ok) {
               log.warn(
-                `pantheon factory consumer rejected message: ${validated.errors.join(" | ")}`,
+                `${formatLifecycleLog({
+                  stream: "factory",
+                  event_name:
+                    typeof envelopeRaw.event_name === "string" ? envelopeRaw.event_name : "unknown",
+                })} action=rejected reason="${validated.errors.join(" | ")}"`,
               );
               continue;
             }
 
             const envelope = validated.envelope;
             log.info(
-              `pantheon factory consumer accepted: operation_id=${envelope.operation_id} agent_id=${envelope.agent_id}`,
+              `${formatLifecycleLog({
+                stream: "factory",
+                event_name: envelope.event_name,
+                operation_id: envelope.operation_id,
+                agent_id: envelope.agent_id,
+                generation: envelope.generation,
+              })} action=accepted`,
             );
 
             const provisionResult = deps.provisionWorkspace(envelope);
@@ -223,7 +240,13 @@ export function startPantheonFactoryConsumer(params: {
             });
 
             log.info(
-              `pantheon factory consumer published ${PANTHEON_EVENT_CREATE_COMPLETED}: operation_id=${envelope.operation_id} agent_id=${envelope.agent_id}`,
+              `${formatLifecycleLog({
+                stream: "factory",
+                event_name: PANTHEON_EVENT_CREATE_COMPLETED,
+                operation_id: envelope.operation_id,
+                agent_id: envelope.agent_id,
+                generation: envelope.generation,
+              })} action=published`,
             );
           } catch (err) {
             log.error(`pantheon factory consumer failed to process message: ${String(err)}`);

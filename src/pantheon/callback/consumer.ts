@@ -39,6 +39,13 @@ function decodePayloadAsString(payload: unknown, encoding?: string): string {
   return JSON.stringify(payload);
 }
 
+function formatLifecycleLog(fields: Record<string, string | number | boolean | undefined>): string {
+  const parts = Object.entries(fields)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${String(value)}`);
+  return `pantheon.lifecycle ${parts.join(" ")}`;
+}
+
 function asCallbackEventName(eventName: string): PantheonCallbackEventName | null {
   if ((PANTHEON_CALLBACK_EVENT_NAMES as readonly string[]).includes(eventName)) {
     return eventName as PantheonCallbackEventName;
@@ -171,7 +178,11 @@ export function startPantheonApiCallbackConsumer(params: {
                 : null;
             if (!eventName) {
               log.warn(
-                `pantheon api callback consumer rejected unsupported event: ${String(envelopeRaw.event_name ?? "<missing>")}`,
+                `${formatLifecycleLog({
+                  stream: "api_callback",
+                  event_name:
+                    typeof envelopeRaw.event_name === "string" ? envelopeRaw.event_name : "unknown",
+                })} action=rejected reason=unsupported_event`,
               );
               continue;
             }
@@ -179,7 +190,10 @@ export function startPantheonApiCallbackConsumer(params: {
             const validated = validateLifecycleCallbackEnvelope(validators[eventName], envelopeRaw);
             if (!validated.ok) {
               log.warn(
-                `pantheon api callback consumer rejected ${eventName}: ${validated.errors.join(" | ")}`,
+                `${formatLifecycleLog({
+                  stream: "api_callback",
+                  event_name: eventName,
+                })} action=rejected reason="${validated.errors.join(" | ")}"`,
               );
               continue;
             }
@@ -203,7 +217,13 @@ export function startPantheonApiCallbackConsumer(params: {
             }
 
             log.info(
-              `pantheon api callback consumer delivered ${eventName}: operation_id=${validated.envelope.operation_id} agent_id=${validated.envelope.agent_id} generation=${validated.envelope.generation}`,
+              `${formatLifecycleLog({
+                stream: "api_callback",
+                event_name: eventName,
+                operation_id: validated.envelope.operation_id,
+                agent_id: validated.envelope.agent_id,
+                generation: validated.envelope.generation,
+              })} action=delivered`,
             );
           } catch (err) {
             log.error(`pantheon api callback consumer failed to process message: ${String(err)}`);

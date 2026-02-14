@@ -15,6 +15,13 @@ class AgentLifecycleCallbackController extends Controller
     public function store(HandleAgentLifecycleCallbackRequest $request)
     {
         if (!$this->isAuthorized($request)) {
+            $this->safeLog('warning', 'pantheon.callback.unauthorized', [
+                'operation_id' => $request->input('operation_id'),
+                'agent_id' => $request->input('agent_id'),
+                'event_name' => $request->input('event_name'),
+                'generation' => $request->input('generation'),
+            ]);
+
             return response()->json([
                 'error' => [
                     'code' => 'unauthorized',
@@ -37,7 +44,7 @@ class AgentLifecycleCallbackController extends Controller
             $eventName = (string) $validated['event_name'];
 
             if ($incomingGeneration < $knownGeneration) {
-                Log::warning('pantheon.callback.stale_generation', [
+                $this->safeLog('warning', 'pantheon.callback.stale_generation', [
                     'operation_id' => $operation->operation_id,
                     'agent_id' => $operation->agent_id,
                     'user_id' => $validated['user_id'],
@@ -55,6 +62,14 @@ class AgentLifecycleCallbackController extends Controller
             }
 
             if ($incomingGeneration === $knownGeneration && $operation->last_event_name === $eventName) {
+                $this->safeLog('info', 'pantheon.callback.duplicate_event', [
+                    'operation_id' => $operation->operation_id,
+                    'agent_id' => $operation->agent_id,
+                    'user_id' => $validated['user_id'],
+                    'event_name' => $eventName,
+                    'generation' => $incomingGeneration,
+                ]);
+
                 return [
                     'applied' => false,
                     'duplicate' => true,
@@ -84,6 +99,14 @@ class AgentLifecycleCallbackController extends Controller
             }
 
             $operation->save();
+
+            $this->safeLog('info', 'pantheon.callback.applied', [
+                'operation_id' => $operation->operation_id,
+                'agent_id' => $operation->agent_id,
+                'user_id' => $validated['user_id'],
+                'event_name' => $eventName,
+                'generation' => $incomingGeneration,
+            ]);
 
             return [
                 'applied' => true,
@@ -124,5 +147,14 @@ class AgentLifecycleCallbackController extends Controller
             'agent.create.completed', 'agent.registered', 'agent.activated' => 'ready',
             default => 'error',
         };
+    }
+
+    private function safeLog(string $level, string $message, array $context = []): void
+    {
+        try {
+            Log::{$level}($message, $context);
+        } catch (\Throwable) {
+            // Logging must never break API contracts.
+        }
     }
 }

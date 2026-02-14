@@ -23,6 +23,32 @@ Required correlation fields in logs:
 
 - `agent_id`, `user_id`, `operation_id`, `generation`, `event_name`, `from_state`, `to_state`.
 
+For D4 MVP, at minimum every lifecycle log line must include:
+
+- `operation_id`, `agent_id`, `event_name`, `generation`.
+
+Current implementation emits these fields in:
+
+- API callback logs: `pantheon.callback.applied`, `pantheon.callback.duplicate_event`, `pantheon.callback.stale_generation`.
+- Gateway factory/callback consumers: `pantheon.lifecycle ... action=accepted|published|delivered|rejected`.
+
+## D4 Smoke Command
+
+Single-command local smoke (pass/fail):
+
+```bash
+pnpm test:e2e:pantheon:create
+```
+
+Environment variables (optional):
+
+- `PANTHEON_SMOKE_API_BASE_URL` (default: `http://127.0.0.1:9504`)
+- `PANTHEON_API_CALLBACK_TOKEN` (if callback auth is enabled)
+
+Expected success output:
+
+- Line containing `PASS operation_id=... agent_id=... state=ready event_name=agent.create.completed generation=1`
+
 ## Incident Classes
 
 ### P1: Pipeline stall
@@ -36,8 +62,10 @@ Actions:
 
 1. Verify worker process health.
 2. Verify RabbitMQ connection/auth and consumer bindings.
-3. Reconcile stuck operations from `agent_operations` where `status='processing'` and `updated_at` older than threshold.
-4. Requeue or fail operation deterministically.
+3. Run smoke to validate end-to-end path quickly:
+   - `pnpm test:e2e:pantheon:create`
+4. Reconcile stuck operations from `agent_operations` where `state='provisioning'` and `updated_at` older than threshold.
+5. Requeue or fail operation deterministically.
 
 ### P1: Runtime config write failure
 
@@ -50,6 +78,7 @@ Actions:
 1. Validate JSON integrity of `runtime/config/openclaw.json`.
 2. Restore from latest valid backup (if configured).
 3. Replay pending registration operation(s) with new `operation_id` and same `generation`.
+4. Confirm API callback queue is draining (`q.agent.api.callback`) and callback consumer is enabled.
 
 ### P1: Gateway reload failure
 
@@ -63,6 +92,7 @@ Actions:
 2. Roll back runtime config to last known-good version.
 3. Restart gateway once with known-good config.
 4. Mark current operation failed and schedule retry.
+5. Re-run `pnpm test:e2e:pantheon:create` before closing incident.
 
 ### P2: Workspace move failure
 
@@ -105,6 +135,11 @@ Use internal tooling/SQL equivalents:
 - Mark operation `failed` with reason.
 - Republish event from stored payload with new `operation_id`.
 - Transition agent to safe `inactive` state when uncertain.
+
+Useful API checks:
+
+- `GET /api/v1/agent-operations/{operation_id}`
+- `POST /api/v1/internal/agent-lifecycle/callback`
 
 ## Safe State Fallback
 

@@ -28,7 +28,6 @@ Route::prefix('v1')->group(function () {
         Route::get('auth/me', [AgentAuthController::class, 'me']);
 
         // Agents Mutation
-        Route::post('agents', [AgentController::class, 'store']);
         Route::put('agents/{agent}', [AgentController::class, 'update']);
         Route::delete('agents/{agent}', [AgentController::class, 'destroy']);
         Route::post('agents/{agent}/inactive', [AgentController::class, 'markInactive']);

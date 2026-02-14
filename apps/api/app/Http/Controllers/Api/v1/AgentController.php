@@ -13,6 +13,7 @@ use App\Models\Agent;
 use App\Repositories\AgentRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -67,10 +68,26 @@ class AgentController extends Controller
             throw $e;
         }
 
+        $this->safeLog('info', 'pantheon.operation.created', [
+            'operation_id' => $operation->operation_id,
+            'agent_id' => $agent->id,
+            'event_name' => 'agent.create.requested',
+            'generation' => 0,
+        ]);
+
         return response()->json([
             'data' => (new AgentResource($agent))->resolve(),
             'operation' => (new AgentOperationResource($operation))->resolve(),
         ], Response::HTTP_CREATED)->header('X-Operation-Id', $operation->operation_id);
+    }
+
+    private function safeLog(string $level, string $message, array $context = []): void
+    {
+        try {
+            Log::{$level}($message, $context);
+        } catch (\Throwable) {
+            // Logging must never break API contracts.
+        }
     }
 
     /**

@@ -78,11 +78,18 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            return response()->json([
+            $payload = [
                 'error' => [
                     'code' => 'internal_error',
                     'message' => 'Internal server error',
                 ],
+            ];
+            if (config('app.debug')) {
+                $payload['error']['debug_message'] = $e->getMessage();
+            }
+
+            return response()->json([
+                ...$payload,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         });
     })->create();
