@@ -113,17 +113,17 @@ Go/No-Go D3:
 
 ## D4 — Operação e observabilidade
 
-1. [ ] Padronizar logs estruturados obrigatórios  
+1. [x] Padronizar logs estruturados obrigatórios  
         Owner: `GW` + `API` | ETA: 1h  
-        Evidência: logs com `operation_id`, `agent_id`, `event_name`, `generation`.
+        Evidência: logs `pantheon.lifecycle` e `pantheon.callback.*` padronizados com `operation_id`, `agent_id`, `event_name`, `generation`.
 
-2. [ ] Atualizar runbook operacional MVP  
+2. [x] Atualizar runbook operacional MVP  
         Owner: `DOC` + `OPS` | ETA: 1h  
-        Evidência: procedimentos de recovery documentados.
+        Evidência: `docs/pantheon/operations-runbook.md` atualizado com smoke command e recovery steps para pipeline/callback.
 
-3. [ ] Implementar smoke E2E automatizado local  
+3. [x] Implementar smoke E2E automatizado local  
         Owner: `GW` + `OPS` | ETA: 1h30  
-        Evidência: comando único pass/fail para fluxo create.
+        Evidência: script `scripts/e2e/pantheon-create-smoke.ts` + comando `pnpm test:e2e:pantheon:create` (PASS validado localmente).
 
 Go/No-Go D4:
 
