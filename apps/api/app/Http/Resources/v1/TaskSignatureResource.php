@@ -11,10 +11,10 @@ class TaskSignatureResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'agent_id' => $this->agent_id,
+            'signer_agent' => $this->signer_agent,
             'scope' => $this->scope,
             'signature_hash' => $this->signature_hash,
-            'signed_at' => $this->signed_at->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }

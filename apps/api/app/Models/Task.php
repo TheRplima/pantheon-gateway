@@ -89,6 +89,14 @@ class Task extends Model
     }
 
     /**
+     * Get execution logs for this task.
+     */
+    public function logs(): HasMany
+    {
+        return $this->hasMany(ExecutionLog::class);
+    }
+
+    /**
      * Get signatures for this task.
      */
     public function signatures(): HasMany

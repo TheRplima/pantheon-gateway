@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Exceptions\DomainConflictException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\StoreAgentRequest;
 use App\Http\Requests\v1\UpdateAgentRequest;
+use App\Http\Resources\v1\AgentOperationResource;
 use App\Http\Resources\v1\AgentResource;
+use App\Models\AgentOperation;
 use App\Models\Agent;
 use App\Repositories\AgentRepository;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class AgentController extends Controller
 {
@@ -33,9 +39,37 @@ class AgentController extends Controller
      */
     public function store(StoreAgentRequest $request)
     {
-        $agent = $this->repository->create($request->validated());
-    
-        return new AgentResource($agent);
+        $operationId = (string) Str::uuid();
+
+        try {
+            [$agent, $operation] = DB::transaction(function () use ($request, $operationId) {
+                $operation = AgentOperation::create([
+                    'operation_id' => $operationId,
+                    'operation_type' => 'agent.create',
+                    'state' => 'pending',
+                ]);
+
+                $agent = $this->repository->create($request->validated());
+
+                $operation->update([
+                    'agent_id' => $agent->id,
+                    'state' => 'ready',
+                ]);
+
+                return [$agent, $operation->fresh()];
+            });
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505') {
+                throw new DomainConflictException('Agent already exists');
+            }
+
+            throw $e;
+        }
+
+        return response()->json([
+            'data' => (new AgentResource($agent))->resolve(),
+            'operation' => (new AgentOperationResource($operation))->resolve(),
+        ], Response::HTTP_CREATED)->header('X-Operation-Id', $operation->operation_id);
     }
 
     /**
