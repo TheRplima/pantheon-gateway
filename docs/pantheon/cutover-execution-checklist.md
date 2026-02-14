@@ -89,21 +89,21 @@ Go/No-Go D2:
 
 ## D3 — Integração assíncrona MVP
 
-1. [ ] Integrar callback de `agent.create.completed` para atualizar operação  
+1. [x] Integrar callback de `agent.create.completed` para atualizar operação  
         Owner: `GW` + `API` | ETA: 1h30  
-        Evidência: operação muda para `ready` após callback.
+        Evidência: endpoint `POST /api/v1/internal/agent-lifecycle/callback` aplica `agent.create.completed` em `agent_operations`.
 
-2. [ ] Garantir idempotência por `operation_id`  
+2. [x] Garantir idempotência por `operation_id`  
         Owner: `GW` + `API` | ETA: 1h  
-        Evidência: replay não duplica side effects.
+        Evidência: callback detecta replay por `operation_id + generation + event_name` e responde sem duplicar update.
 
-3. [ ] Garantir proteção de `generation` (stale ignore)  
+3. [x] Garantir proteção de `generation` (stale ignore)  
         Owner: `GW` + `API` | ETA: 1h  
-        Evidência: evento stale rejeitado com log explícito.
+        Evidência: callback ignora `generation` menor que `latest_generation` com log `pantheon.callback.stale_generation`.
 
-4. [ ] Validar schemas `v1` no fluxo de ponta a ponta  
+4. [x] Validar schemas `v1` no fluxo de ponta a ponta  
         Owner: `GW` | ETA: 45m  
-        Evidência: validação ok nos envelopes de entrada/saída.
+        Evidência: consumer `q.agent.api.callback` valida `agent.create.completed|agent.registered|agent.activated` contra `packages/contracts/schemas/v1/*`.
 
 Go/No-Go D3:
 
