@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\v1\AgentAuthController;
 use App\Http\Controllers\Api\v1\AgentController;
+use App\Http\Controllers\Api\v1\AgentLifecycleCallbackController;
 use App\Http\Controllers\Api\v1\AgentOperationController;
 use App\Http\Controllers\Api\v1\TaskController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,7 @@ Route::prefix('v1')->group(function () {
     Route::get('agents/{agent}', [AgentController::class, 'show']);
     Route::post('agents', [AgentController::class, 'store']); // Public for Dashboard Alpha
     Route::get('agent-operations/{operation_id}', [AgentOperationController::class, 'show']);
+    Route::post('internal/agent-lifecycle/callback', [AgentLifecycleCallbackController::class, 'store']);
     Route::get('tasks', [TaskController::class, 'index']);
     Route::get('tasks/{task}', [TaskController::class, 'show']);
 

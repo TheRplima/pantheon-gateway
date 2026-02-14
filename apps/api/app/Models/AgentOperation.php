@@ -15,13 +15,17 @@ class AgentOperation extends Model
         'agent_id',
         'operation_type',
         'state',
+        'latest_generation',
+        'last_event_name',
         'error_code',
         'error_message',
         'metadata',
+        'completed_at',
     ];
 
     protected $casts = [
         'metadata' => 'array',
+        'completed_at' => 'datetime',
     ];
 
     public function agent(): BelongsTo
@@ -29,4 +33,3 @@ class AgentOperation extends Model
         return $this->belongsTo(Agent::class, 'agent_id');
     }
 }
-

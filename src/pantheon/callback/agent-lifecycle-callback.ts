@@ -2,9 +2,18 @@ import type { ValidateFunction } from "ajv";
 import Ajv2020Pkg from "ajv/dist/2020.js";
 import fs from "node:fs";
 import path from "node:path";
+import { resolveContractsSchemaDir } from "../factory/agent-create-requested.js";
 
-export type AgentCreateCompletedEnvelope = {
-  event_name: "agent.create.completed";
+export const PANTHEON_CALLBACK_EVENT_NAMES = [
+  "agent.create.completed",
+  "agent.registered",
+  "agent.activated",
+] as const;
+
+export type PantheonCallbackEventName = (typeof PANTHEON_CALLBACK_EVENT_NAMES)[number];
+
+export type PantheonLifecycleCallbackEnvelope = {
+  event_name: PantheonCallbackEventName;
   event_version: 1;
   operation_id: string;
   occurred_at: string;
@@ -12,35 +21,7 @@ export type AgentCreateCompletedEnvelope = {
   agent_id: string;
   user_id: string;
   generation: number;
-  payload: {
-    paths: {
-      active_workspace_path: string;
-      disabled_workspace_path: string;
-      current_workspace_path: string;
-    };
-    template: {
-      key: string;
-      version: string;
-      checksum: string;
-    };
-    model: {
-      key: string;
-      version: string;
-      checksum: string;
-    };
-    workspace_checks: {
-      exists: boolean;
-      bootstrap_files_present: Array<
-        | "AGENTS.md"
-        | "SOUL.md"
-        | "TOOLS.md"
-        | "IDENTITY.md"
-        | "USER.md"
-        | "HEARTBEAT.md"
-        | "BOOTSTRAP.md"
-      >;
-    };
-  };
+  payload: unknown;
 };
 
 function readJsonFile(filePath: string): unknown {
@@ -59,19 +40,20 @@ function normalizeEnvelopeRef(schema: unknown, envelopeId: string): unknown {
   return cloned;
 }
 
-function resolveContractsSchemaDir(cwd = process.cwd()): string {
-  return path.resolve(cwd, "packages/contracts/schemas/v1");
+function resolveSchemaFileForEventName(eventName: PantheonCallbackEventName): string {
+  return `${eventName}.schema.json`;
 }
 
-export function buildAgentCreateCompletedValidator(params?: {
+export function buildLifecycleCallbackValidator(params: {
+  eventName: PantheonCallbackEventName;
   cwd?: string;
-}): ValidateFunction<AgentCreateCompletedEnvelope> {
-  const schemaDir = resolveContractsSchemaDir(params?.cwd);
+}): ValidateFunction<PantheonLifecycleCallbackEnvelope> {
+  const schemaDir = resolveContractsSchemaDir(params.cwd);
   const envelopeSchemaPath = path.join(schemaDir, "envelope.schema.json");
-  const completedSchemaPath = path.join(schemaDir, "agent.create.completed.schema.json");
+  const eventSchemaPath = path.join(schemaDir, resolveSchemaFileForEventName(params.eventName));
 
   const envelopeSchema = readJsonFile(envelopeSchemaPath) as { $id?: string };
-  const completedSchema = readJsonFile(completedSchemaPath);
+  const eventSchema = readJsonFile(eventSchemaPath);
 
   const Ajv2020Ctor = Ajv2020Pkg as unknown as new (opts?: object) => {
     addSchema: (schema: unknown, key?: string) => void;
@@ -86,14 +68,14 @@ export function buildAgentCreateCompletedValidator(params?: {
   const envelopeId = envelopeSchema.$id ?? "pantheon.contracts.v1.envelope";
   ajv.addSchema(envelopeSchema, envelopeId);
 
-  const normalizedSchema = normalizeEnvelopeRef(completedSchema, envelopeId);
-  return ajv.compile<AgentCreateCompletedEnvelope>(normalizedSchema);
+  const normalizedSchema = normalizeEnvelopeRef(eventSchema, envelopeId);
+  return ajv.compile<PantheonLifecycleCallbackEnvelope>(normalizedSchema);
 }
 
-export function validateAgentCreateCompletedEnvelope(
-  validator: ValidateFunction<AgentCreateCompletedEnvelope>,
+export function validateLifecycleCallbackEnvelope(
+  validator: ValidateFunction<PantheonLifecycleCallbackEnvelope>,
   envelope: unknown,
-): { ok: true; envelope: AgentCreateCompletedEnvelope } | { ok: false; errors: string[] } {
+): { ok: true; envelope: PantheonLifecycleCallbackEnvelope } | { ok: false; errors: string[] } {
   const valid = validator(envelope);
   if (valid) {
     return { ok: true, envelope };

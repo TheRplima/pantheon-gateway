@@ -1,7 +1,8 @@
 import path from "node:path";
 import type { CanvasHostServer } from "../canvas-host/server.js";
-import type { PluginServicesHandle } from "../plugins/services.js";
+import type { PantheonApiCallbackConsumerHandle } from "../pantheon/callback/consumer.js";
 import type { PantheonFactoryConsumerHandle } from "../pantheon/factory/consumer.js";
+import type { PluginServicesHandle } from "../plugins/services.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { ControlUiRootState } from "./control-ui.js";
 import type { startBrowserControlServerIfEnabled } from "./server-browser.js";
@@ -245,6 +246,7 @@ export async function startGatewayServer(
   const gatewayMethods = Array.from(new Set([...baseGatewayMethods, ...channelMethods]));
   let pluginServices: PluginServicesHandle | null = null;
   let pantheonFactoryConsumer: PantheonFactoryConsumerHandle | null = null;
+  let pantheonApiCallbackConsumer: PantheonApiCallbackConsumerHandle | null = null;
   const runtimeConfig = await resolveGatewayRuntimeConfig({
     cfg: cfgAtStart,
     port,
@@ -548,17 +550,18 @@ export async function startGatewayServer(
   });
 
   let browserControl: Awaited<ReturnType<typeof startBrowserControlServerIfEnabled>> = null;
-  ({ browserControl, pluginServices, pantheonFactoryConsumer } = await startGatewaySidecars({
-    cfg: cfgAtStart,
-    pluginRegistry,
-    defaultWorkspaceDir,
-    deps,
-    startChannels,
-    log,
-    logHooks,
-    logChannels,
-    logBrowser,
-  }));
+  ({ browserControl, pluginServices, pantheonFactoryConsumer, pantheonApiCallbackConsumer } =
+    await startGatewaySidecars({
+      cfg: cfgAtStart,
+      pluginRegistry,
+      defaultWorkspaceDir,
+      deps,
+      startChannels,
+      log,
+      logHooks,
+      logChannels,
+      logBrowser,
+    }));
 
   const { applyHotReload, requestGatewayRestart } = createGatewayReloadHandlers({
     deps,
@@ -607,6 +610,7 @@ export async function startGatewayServer(
     stopChannel,
     pluginServices,
     pantheonFactoryConsumer,
+    pantheonApiCallbackConsumer,
     cron,
     heartbeatRunner,
     nodePresenceTimers,

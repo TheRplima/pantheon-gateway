@@ -16,11 +16,15 @@ import {
 } from "../hooks/internal-hooks.js";
 import { loadInternalHooks } from "../hooks/loader.js";
 import { isTruthyEnvValue } from "../infra/env.js";
-import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
+import {
+  startPantheonApiCallbackConsumer,
+  type PantheonApiCallbackConsumerHandle,
+} from "../pantheon/callback/consumer.js";
 import {
   startPantheonFactoryConsumer,
   type PantheonFactoryConsumerHandle,
 } from "../pantheon/factory/consumer.js";
+import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
 import { startBrowserControlServerIfEnabled } from "./server-browser.js";
 import {
   scheduleRestartSentinelWake,
@@ -167,11 +171,24 @@ export async function startGatewaySidecars(params: {
     params.log.warn(`pantheon factory consumer failed to start: ${String(err)}`);
   }
 
+  let pantheonApiCallbackConsumer: PantheonApiCallbackConsumerHandle | null = null;
+  try {
+    pantheonApiCallbackConsumer = startPantheonApiCallbackConsumer({
+      log: {
+        info: (msg) => params.log.info(msg),
+        warn: (msg) => params.log.warn(msg),
+        error: (msg) => params.log.error(msg),
+      },
+    });
+  } catch (err) {
+    params.log.warn(`pantheon api callback consumer failed to start: ${String(err)}`);
+  }
+
   if (shouldWakeFromRestartSentinel()) {
     setTimeout(() => {
       void scheduleRestartSentinelWake({ deps: params.deps });
     }, 750);
   }
 
-  return { browserControl, pluginServices, pantheonFactoryConsumer };
+  return { browserControl, pluginServices, pantheonFactoryConsumer, pantheonApiCallbackConsumer };
 }

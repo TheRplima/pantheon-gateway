@@ -100,7 +100,7 @@ export function validateAgentCreateRequestedEnvelope(
 ): { ok: true; envelope: AgentCreateRequestedEnvelope } | { ok: false; errors: string[] } {
   const valid = validator(envelope);
   if (valid) {
-    return { ok: true, envelope: envelope as AgentCreateRequestedEnvelope };
+    return { ok: true, envelope };
   }
 
   const errors = (validator.errors ?? []).map((err) => {

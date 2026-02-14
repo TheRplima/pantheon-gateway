@@ -47,13 +47,14 @@ class AgentController extends Controller
                     'operation_id' => $operationId,
                     'operation_type' => 'agent.create',
                     'state' => 'pending',
+                    'latest_generation' => 0,
                 ]);
 
                 $agent = $this->repository->create($request->validated());
 
                 $operation->update([
                     'agent_id' => $agent->id,
-                    'state' => 'ready',
+                    'state' => 'provisioning',
                 ]);
 
                 return [$agent, $operation->fresh()];
