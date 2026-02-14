@@ -65,21 +65,21 @@ Go/No-Go D1:
 
 ## D2 — Hardening P1 + contratos HTTP MVP
 
-1. [ ] Corrigir `TaskSignatureResource` (campos reais)  
+1. [x] Corrigir `TaskSignatureResource` (campos reais)  
         Owner: `API` | ETA: 30m  
-        Evidência: payload de assinatura consistente com DB/model.
+        Evidência: `TaskSignatureResource` corrigido para `signer_agent` + `created_at`.
 
-2. [ ] Corrigir `TaskResource` relation `logs` (adicionar relation ou remover campo)  
+2. [x] Corrigir `TaskResource` relation `logs` (adicionar relation ou remover campo)  
         Owner: `API` | ETA: 30m  
-        Evidência: serialização de task sem warnings/erros.
+        Evidência: relation `logs()` adicionada em `apps/api/app/Models/Task.php`.
 
-3. [ ] Padronizar erros HTTP (`422/404/409/500`)  
+3. [x] Padronizar erros HTTP (`422/404/409/500`)  
         Owner: `API` | ETA: 1h  
-        Evidência: respostas de erro consistentes e documentadas.
+        Evidência: renderização de erros de API padronizada em `apps/api/bootstrap/app.php`.
 
-4. [ ] Definir surface mínima de operação (`POST agents`, `GET agents/{id}`, `GET operations/{id}`)  
+4. [x] Definir surface mínima de operação (`POST agents`, `GET agents/{id}`, `GET operations/{id}`)  
         Owner: `API` | ETA: 1h30  
-        Evidência: endpoints funcionais com contrato estável.
+        Evidência: `POST /v1/agents` agora cria e retorna `operation_id`; `GET /v1/agent-operations/{operation_id}` adicionado.
 
 Go/No-Go D2:
 
