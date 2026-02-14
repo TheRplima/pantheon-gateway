@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\LoginRequest;
 use App\Services\AgentAuthService;
-use Illuminate\Http\Request;
 
 class AgentAuthController extends Controller
 {
