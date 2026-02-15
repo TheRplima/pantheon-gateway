@@ -119,10 +119,11 @@ Mínimo:
 - Validação pós-refactor (2026-02-15):
   - Commit: `9590d8a5c`
   - Smoke async lifecycle: `PANTHEON_SMOKE_API_BASE_URL=http://127.0.0.1:8088 pnpm test:e2e:pantheon:create` (PASS)
+  - Smoke callback idempotência: `PANTHEON_SMOKE_API_BASE_URL=http://127.0.0.1:8088 pnpm test:e2e:pantheon:callback` (PASS)
   - Gate local:
     - `pnpm build` (PASS)
     - `pnpm test` (PASS)
-    - `pnpm check` (falha em templates YAML com placeholders `{{...}}`, sem relação com fluxo Pantheon)
+    - `pnpm format:check` (PASS, após ajuste de ignore para templates YAML parametrizados)
 
 ---
 

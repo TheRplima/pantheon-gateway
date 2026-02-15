@@ -32,12 +32,18 @@ Current implementation emits these fields in:
 - API callback logs: `pantheon.callback.applied`, `pantheon.callback.duplicate_event`, `pantheon.callback.stale_generation`.
 - Gateway factory/callback consumers: `pantheon.lifecycle ... action=accepted|published|delivered|rejected`.
 
-## D4 Smoke Command
+## D4 Smoke Commands
 
-Single-command local smoke (pass/fail):
+Primary async lifecycle smoke (create -> callback -> ready):
 
 ```bash
 pnpm test:e2e:pantheon:create
+```
+
+Idempotency/stale/duplicate callback smoke:
+
+```bash
+pnpm test:e2e:pantheon:callback
 ```
 
 Environment variables (optional):
@@ -45,9 +51,13 @@ Environment variables (optional):
 - `PANTHEON_SMOKE_API_BASE_URL` (default: `http://127.0.0.1:9504`)
 - `PANTHEON_API_CALLBACK_TOKEN` (if callback auth is enabled)
 
-Expected success output:
+Expected success output (`test:e2e:pantheon:create`):
 
 - Line containing `PASS operation_id=... agent_id=... state=ready event_name=agent.create.completed generation=1`
+
+Expected success output (`test:e2e:pantheon:callback`):
+
+- Line containing `PASS operation_id=... agent_id=... final_event=agent.registered final_generation=2`
 
 ## Incident Classes
 
