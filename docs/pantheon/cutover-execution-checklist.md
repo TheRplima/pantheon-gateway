@@ -160,3 +160,15 @@ Go/No-Go D5:
 4. [x] Tracking de operação por `operation_id` disponível.
 5. [x] Logs e runbook operacionais prontos.
 6. [x] Source of truth oficialmente consolidado neste repositório.
+
+---
+
+## Validação pós-refactor (2026-02-15)
+
+- Escopo: refactor de controllers/services para padrão repository + service.
+- Commit validado: `9590d8a5c`.
+- Evidências:
+  - Smoke E2E: `PANTHEON_SMOKE_API_BASE_URL=http://127.0.0.1:8088 pnpm test:e2e:pantheon:create` (PASS).
+  - Build: `pnpm build` (PASS).
+  - Testes: `pnpm test` (PASS).
+  - Observação de gate: `pnpm check` falha em templates YAML com placeholders `{{...}}` (`skills/agent-factory/template/v2.5/decision/*.yaml`, `skills/agent-factory/template/v2.5/registry/agents.yaml`), sem regressão detectada no fluxo Pantheon.

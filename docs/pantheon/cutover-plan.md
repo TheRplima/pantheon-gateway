@@ -116,6 +116,13 @@ Mínimo:
 
 - Data de formalização: **2026-02-14**.
 - Registro operacional: `docs/pantheon/cutover-formalization-2026-02-14.md`.
+- Validação pós-refactor (2026-02-15):
+  - Commit: `9590d8a5c`
+  - Smoke async lifecycle: `PANTHEON_SMOKE_API_BASE_URL=http://127.0.0.1:8088 pnpm test:e2e:pantheon:create` (PASS)
+  - Gate local:
+    - `pnpm build` (PASS)
+    - `pnpm test` (PASS)
+    - `pnpm check` (falha em templates YAML com placeholders `{{...}}`, sem relação com fluxo Pantheon)
 
 ---
 
