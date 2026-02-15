@@ -27,22 +27,25 @@ agent_factory.py --name NAME --model MODEL --role {ENTRY|SERVICE|ORCHESTRATOR} [
 ```
 
 ### Required Arguments
-| Arg | Description |
-|-----|-------------|
-| `--name` | Agent name/ID (slugified for filesystem) |
-| `--model` | Model name from `models/{type}/` |
-| `--role` | Agent type: ENTRY, SERVICE, or ORCHESTRATOR |
+
+| Arg       | Description                                 |
+| --------- | ------------------------------------------- |
+| `--name`  | Agent name/ID (slugified for filesystem)    |
+| `--model` | Model name from `models/{type}/`            |
+| `--role`  | Agent type: ENTRY, SERVICE, or ORCHESTRATOR |
 
 ### Optional Arguments
-| Arg | Default | Description |
-|-----|---------|-------------|
-| `--base_dir` | `agents` | Output directory |
-| `--template_version` | `v2.5` | Current Sovereign template version |
-| `--force` | false | Overwrite existing files |
-| `--register` | false | Create config.json in `configs/registry/` |
-| `--dry-run` | false | Preview without creating |
+
+| Arg                  | Default  | Description                               |
+| -------------------- | -------- | ----------------------------------------- |
+| `--base_dir`         | `agents` | Output directory                          |
+| `--template_version` | `v2.5`   | Current Sovereign template version        |
+| `--force`            | false    | Overwrite existing files                  |
+| `--register`         | false    | Create config.json in `configs/registry/` |
+| `--dry-run`          | false    | Preview without creating                  |
 
 ### Legacy Arguments (backward compatibility)
+
 `--function`, `--profile`, `--responsibilities` — usage deprecated in favor of model-driven generation.
 
 ## Directory Structure (v2.5)
@@ -70,10 +73,13 @@ agent-factory/
 ## Sovereign Principles
 
 ### 1. Sovereign English Requirement
+
 All agent-facing content (SOUL, IDENTITY, GOVERNANCE, DECISION) MUST be in **English**. This ensures maximum semantic compatibility with LLMs and follows the project's internal technical standard (Decision #32).
 
 ### 2. Essence Shielding
+
 The factory protects the "soul" of an agent. By default, it will NEVER overwrite:
+
 - `SOUL.md` (Agent essence/principles)
 - `governance/SPECIFIC_GOVERNANCE.md` (Specific domain rules)
 
@@ -96,7 +102,7 @@ domain: domain-name
 decision:
   proactivity:
     enabled: false
-  
+
   # Optional: Extra artifacts to inject from templates
   manifest:
     - "protocols/specialized/custom_protocol.md"

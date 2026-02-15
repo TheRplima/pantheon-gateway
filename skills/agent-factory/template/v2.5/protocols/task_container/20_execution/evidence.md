@@ -13,6 +13,7 @@ marker_schema: v1.0
 - [ISO8601] — state: `received` — action: container created — result: ok
 
 ## Key Decisions (if any)
+
 - Decision:
   - Reason:
   - Impact:

@@ -14,7 +14,9 @@ import {
 
 describe("pantheon rabbitmq routing v1", () => {
   it("maps agent.create.requested to factory queue", () => {
-    expect(resolvePantheonQueuesForEvent(PANTHEON_EVENT_CREATE_REQUESTED)).toEqual([PANTHEON_QUEUE_FACTORY]);
+    expect(resolvePantheonQueuesForEvent(PANTHEON_EVENT_CREATE_REQUESTED)).toEqual([
+      PANTHEON_QUEUE_FACTORY,
+    ]);
   });
 
   it("maps agent.create.completed to runtime and api callback queues", () => {
@@ -25,8 +27,12 @@ describe("pantheon rabbitmq routing v1", () => {
   });
 
   it("maps terminal events to api callback queue", () => {
-    expect(resolvePantheonQueuesForEvent(PANTHEON_EVENT_REGISTERED)).toEqual([PANTHEON_QUEUE_API_CALLBACK]);
-    expect(resolvePantheonQueuesForEvent(PANTHEON_EVENT_ACTIVATED)).toEqual([PANTHEON_QUEUE_API_CALLBACK]);
+    expect(resolvePantheonQueuesForEvent(PANTHEON_EVENT_REGISTERED)).toEqual([
+      PANTHEON_QUEUE_API_CALLBACK,
+    ]);
+    expect(resolvePantheonQueuesForEvent(PANTHEON_EVENT_ACTIVATED)).toEqual([
+      PANTHEON_QUEUE_API_CALLBACK,
+    ]);
   });
 
   it("exports normalized binding entries", () => {

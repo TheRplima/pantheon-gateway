@@ -8,6 +8,7 @@ description: Create a Pantheon agent workspace following Sovereign Standard v2.5
 ## Overview
 
 Generate a new Pantheon-compliant agent workspace followinig the v2.5 Sovereign standard:
+
 - **Hierarchical Governance**: CORE, DRIFT, FAILURE, and SECURITY policies.
 - **Deterministic Decision Layer**: State-machine driven rules and gates.
 - **IATP v2.5 Protocol**: Atomic Task Container flow (BRIEF/PLAN/EXEC/REPORT).
@@ -17,7 +18,8 @@ Generate a new Pantheon-compliant agent workspace followinig the v2.5 Sovereign 
 ## Workflow
 
 ### 1) Choose or Create a Model
-Select a YAML model from `models/entry/`, `models/service/`, or `models/orchestrator/`. 
+
+Select a YAML model from `models/entry/`, `models/service/`, or `models/orchestrator/`.
 Ensure all agent-facing content in the model is in **English**.
 
 ### 2) Run the Generator
@@ -35,12 +37,12 @@ python3 configs/skills/agent-factory/scripts/agent_factory.py \
 
 ### 3) Key Options
 
-| Flag | Description |
-|------|-------------|
-| `--template_version` | Use `v2.5` for current Sovereign standard. |
-| `--register` | Registers the agent in `configs/registry/`. |
-| `--force` | Overwrites core files (use for migrations). |
-| `--dry-run` | Preview files before writing to disk. |
+| Flag                 | Description                                 |
+| -------------------- | ------------------------------------------- |
+| `--template_version` | Use `v2.5` for current Sovereign standard.  |
+| `--register`         | Registers the agent in `configs/registry/`. |
+| `--force`            | Overwrites core files (use for migrations). |
+| `--dry-run`          | Preview files before writing to disk.       |
 
 ## Workspace Structure (v2.5)
 
@@ -75,7 +77,9 @@ agents/<name>/
 ```
 
 ## Manifest System
+
 V2.5 models can request extra artifacts via the `manifest` field. These are pulled from the `template/v2.5/` directory and injected into the agent's workspace root.
 
 ## Essence Protection
+
 The factory preserves `SOUL.md` and `SPECIFIC_GOVERNANCE.md` unless `--force` is used, allowing for safe iterative updates to the system core without losing the agent's unique character.

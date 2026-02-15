@@ -30,13 +30,13 @@ Define publish/consume permissions per worker role for lifecycle topics.
 
 ## ACL Matrix
 
-| Role | Publish | Consume |
-| :--- | :--- | :--- |
-| `api-worker` | `agent.provision.requested`, `agent.runtime.register.requested`, `agent.activation.requested`, `agent.deactivation.requested` | `agent.workspace.ready`, `agent.runtime.registered`, `agent.activated`, `agent.deactivated`, `agent.failed` |
-| `factory-worker` | `agent.workspace.ready`, `agent.failed` | `agent.provision.requested` |
-| `runtime-worker` | `agent.runtime.registered`, `agent.activated`, `agent.failed` | `agent.runtime.register.requested`, `agent.activation.requested`, `agent.deactivation.requested` |
-| `workspace-worker` | `agent.deactivated`, `agent.activated`, `agent.failed` | `agent.activation.requested`, `agent.deactivation.requested` |
-| `ops-observer` | none | all lifecycle events (optional mirrored queue) |
+| Role               | Publish                                                                                                                       | Consume                                                                                                     |
+| :----------------- | :---------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------- |
+| `api-worker`       | `agent.provision.requested`, `agent.runtime.register.requested`, `agent.activation.requested`, `agent.deactivation.requested` | `agent.workspace.ready`, `agent.runtime.registered`, `agent.activated`, `agent.deactivated`, `agent.failed` |
+| `factory-worker`   | `agent.workspace.ready`, `agent.failed`                                                                                       | `agent.provision.requested`                                                                                 |
+| `runtime-worker`   | `agent.runtime.registered`, `agent.activated`, `agent.failed`                                                                 | `agent.runtime.register.requested`, `agent.activation.requested`, `agent.deactivation.requested`            |
+| `workspace-worker` | `agent.deactivated`, `agent.activated`, `agent.failed`                                                                        | `agent.activation.requested`, `agent.deactivation.requested`                                                |
+| `ops-observer`     | none                                                                                                                          | all lifecycle events (optional mirrored queue)                                                              |
 
 ## Security Controls
 

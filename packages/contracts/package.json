@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "description": "Versioned async contracts for Pantheon agent lifecycle",
-  "type": "module",
   "files": [
     "schemas/",
     "examples/",
     "README.md",
     "CHANGELOG.md"
-  ]
+  ],
+  "type": "module"
 }

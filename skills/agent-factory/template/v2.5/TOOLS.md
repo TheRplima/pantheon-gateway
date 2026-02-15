@@ -43,8 +43,10 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ---
 
 <!-- :::immutable -->
+
 > [!CAUTION]
 > **CREDENTIAL EXPOSURE HAZARD**
 > Nunca salve senhas, tokens de API ou chaves privadas neste arquivo.
 > Use `governance/SECURITY_POLICY.md` para entender como o Orchestrator gerencia segredos via env-vars.
+
 <!-- ::: -->

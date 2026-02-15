@@ -3,7 +3,6 @@ template_version: v2.5
 marker_schema: v1.0
 ::: -->
 
-
 # Decision Log
 
 > [!NOTE]
@@ -25,4 +24,4 @@ marker_schema: v1.0
 
 ## Log
 
-*(Decisions will be logged below as they occur)*
+_(Decisions will be logged below as they occur)_

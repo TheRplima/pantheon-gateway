@@ -18,10 +18,12 @@ Registrar ideias de evolução arquitetural para próximas versões, sem alterar
 Adicionar modelagem em dois níveis:
 
 1. **Template Package**
+
 - Identidade do template (`template_key`, `template_version`, `schema_version`, status).
 - Metadados de publicação e checksum do pacote.
 
 2. **Template Files**
+
 - Registro por arquivo (path relativo, conteúdo, hash, tipo, flags de proteção).
 - Versionado por pacote para reprodução determinística.
 
@@ -61,9 +63,11 @@ Adicionar modelagem em dois níveis:
 Adicionar modelagem complementar:
 
 1. **Agent Model (head)**
+
 - `model_key`, `model_version`, `model_type`, compatibilidade com template.
 
 2. **Model Artifacts / Components**
+
 - Blocos versionados (identity, soul, governance, decision, io, onboarding, context).
 - Manifest de artefatos extras (`decision.manifest[]`) explicitado e validado.
 

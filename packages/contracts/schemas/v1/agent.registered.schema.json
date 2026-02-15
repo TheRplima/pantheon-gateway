@@ -34,7 +34,11 @@
             },
             "paths": {
               "type": "object",
-              "required": ["active_workspace_path", "disabled_workspace_path", "current_workspace_path"],
+              "required": [
+                "active_workspace_path",
+                "disabled_workspace_path",
+                "current_workspace_path"
+              ],
               "properties": {
                 "active_workspace_path": { "type": "string", "minLength": 1 },
                 "disabled_workspace_path": { "type": "string", "minLength": 1 },

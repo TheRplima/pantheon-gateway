@@ -25,13 +25,14 @@ export type PantheonLifecycleEventNameV1 =
   | typeof PANTHEON_EVENT_REGISTERED
   | typeof PANTHEON_EVENT_ACTIVATED;
 
-export const PANTHEON_ROUTING_TO_QUEUES_V1: Readonly<Record<PantheonLifecycleEventNameV1, readonly PantheonQueueName[]>> =
-  {
-    [PANTHEON_EVENT_CREATE_REQUESTED]: [PANTHEON_QUEUE_FACTORY],
-    [PANTHEON_EVENT_CREATE_COMPLETED]: [PANTHEON_QUEUE_RUNTIME, PANTHEON_QUEUE_API_CALLBACK],
-    [PANTHEON_EVENT_REGISTERED]: [PANTHEON_QUEUE_API_CALLBACK],
-    [PANTHEON_EVENT_ACTIVATED]: [PANTHEON_QUEUE_API_CALLBACK],
-  } as const;
+export const PANTHEON_ROUTING_TO_QUEUES_V1: Readonly<
+  Record<PantheonLifecycleEventNameV1, readonly PantheonQueueName[]>
+> = {
+  [PANTHEON_EVENT_CREATE_REQUESTED]: [PANTHEON_QUEUE_FACTORY],
+  [PANTHEON_EVENT_CREATE_COMPLETED]: [PANTHEON_QUEUE_RUNTIME, PANTHEON_QUEUE_API_CALLBACK],
+  [PANTHEON_EVENT_REGISTERED]: [PANTHEON_QUEUE_API_CALLBACK],
+  [PANTHEON_EVENT_ACTIVATED]: [PANTHEON_QUEUE_API_CALLBACK],
+} as const;
 
 export const PANTHEON_ALL_QUEUES: readonly PantheonQueueName[] = [
   PANTHEON_QUEUE_FACTORY,
@@ -51,13 +52,15 @@ export function listPantheonBindingsV1(): ReadonlyArray<{
   queue: PantheonQueueName;
   routingKey: PantheonLifecycleEventNameV1;
 }> {
-  const bindings: Array<{ exchange: string; queue: PantheonQueueName; routingKey: PantheonLifecycleEventNameV1 }> =
-    [];
+  const bindings: Array<{
+    exchange: string;
+    queue: PantheonQueueName;
+    routingKey: PantheonLifecycleEventNameV1;
+  }> = [];
 
-  for (const [routingKey, queues] of Object.entries(PANTHEON_ROUTING_TO_QUEUES_V1) as Array<[
-    PantheonLifecycleEventNameV1,
-    readonly PantheonQueueName[],
-  ]>) {
+  for (const [routingKey, queues] of Object.entries(PANTHEON_ROUTING_TO_QUEUES_V1) as Array<
+    [PantheonLifecycleEventNameV1, readonly PantheonQueueName[]]
+  >) {
     for (const queue of queues) {
       bindings.push({
         exchange: PANTHEON_LIFECYCLE_EXCHANGE,

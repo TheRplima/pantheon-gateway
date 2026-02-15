@@ -6,12 +6,14 @@ marker_schema: v1.0
 ::: -->
 
 <!-- :::immutable -->
-*This is a Stateless Service/Orchestrator workspace. Persistent user data is NOT stored here.*
+
+_This is a Stateless Service/Orchestrator workspace. Persistent user data is NOT stored here._
+
 <!-- ::: -->
 
 ## Policy
 
-As a **{{AGENT_TYPE}}**, I remain user-agnostic. I receive the necessary human context dynamically via **BRIEFs** or task-specific metadata. 
+As a **{{AGENT_TYPE}}**, I remain user-agnostic. I receive the necessary human context dynamically via **BRIEFs** or task-specific metadata.
 
 - **Identity**: Context is provided per-request.
 - **Privacy**: No PII is persisted in this workspace.
@@ -20,5 +22,7 @@ As a **{{AGENT_TYPE}}**, I remain user-agnostic. I receive the necessary human c
 ---
 
 <!-- :::immutable -->
+
 Compatibility: OpenClaw Standard v2.x
+
 <!-- ::: -->

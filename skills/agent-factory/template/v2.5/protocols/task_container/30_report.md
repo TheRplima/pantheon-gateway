@@ -11,38 +11,45 @@ marker_schema: v1.0
 
 ## Reference
 
-| Field | Value |
-|-------|-------|
-| **TASK_ID** | `task_[ID]` |
-| **Report Created** | `[ISO8601 timestamp]` |
-| **Executor (owner_agent)** | `[executor-agent-id]` |
+| Field                        | Value                                        |
+| ---------------------------- | -------------------------------------------- |
+| **TASK_ID**                  | `task_[ID]`                                  |
+| **Report Created**           | `[ISO8601 timestamp]`                        |
+| **Executor (owner_agent)**   | `[executor-agent-id]`                        |
 | **Outcome (human-readable)** | `success` / `partial` / `failed` / `blocked` |
 
 ## Result
-*(One paragraph: what was delivered.)*
 
-- 
+_(One paragraph: what was delivered.)_
+
+-
 
 ## Deliverables
+
 - `30_report.md`
 - Attachments (if any): `30_delivery/...`
 
 ## How to Use / Apply (if applicable)
-- 
+
+-
 
 ## Validation
+
 ### Checks Performed
-- 
+
+-
 
 ### Evidence
+
 - `20_execution/evidence.md`
-- Other artifacts:
-  - 
+- ## Other artifacts:
 
 ## Limitations
-*(What is explicitly not covered?)*
 
-- 
+_(What is explicitly not covered?)_
+
+-
 
 ## Next Actions (optional)
-- 
+
+-

@@ -15,9 +15,10 @@ marker_schema: v1.0
 
 ## 🟢 Agentes em Operação
 
-| Agente | Tipo | Domínio | Status | Último Heartbeat |
-| :--- | :--- | :--- | :--- | :--- |
-| operator | ENTRY | System | active | - |
+| Agente   | Tipo  | Domínio | Status | Último Heartbeat |
+| :------- | :---- | :------ | :----- | :--------------- |
+| operator | ENTRY | System  | active | -                |
+
 {{AGENT_STATE_ROWS}}
 
 ---
@@ -25,23 +26,23 @@ marker_schema: v1.0
 ## 🛠️ Tarefas Ativas (In-Flight)
 
 | Task ID | Título | Responsável | Status | Início |
-| :--- | :--- | :--- | :--- | :--- |
-| - | - | - | - | - |
+| :------ | :----- | :---------- | :----- | :----- |
+| -       | -      | -           | -      | -      |
 
 ---
 
 ## 🚨 Alertas e Incidentes
 
 | Nível | Mensagem | Agente | Ação Exigida |
-| :--- | :--- | :--- | :--- |
-| - | - | - | - |
+| :---- | :------- | :----- | :----------- |
+| -     | -        | -      | -            |
 
 ---
 
 ## 📊 Resumo de Saúde
 
-| Métrica | Valor |
-| :--- | :--- |
-| Total de Task Containers | 0 |
-| Latência Média IATP | - |
-| Violações de Governança | 0 |
+| Métrica                  | Valor |
+| :----------------------- | :---- |
+| Total de Task Containers | 0     |
+| Latência Média IATP      | -     |
+| Violações de Governança  | 0     |

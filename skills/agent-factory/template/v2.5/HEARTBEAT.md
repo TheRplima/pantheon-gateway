@@ -17,12 +17,13 @@ marker_schema: v1.0
 - [ ] Review decision log in `logs/decision_log.md` for patterns
 
 :::role:ORCHESTRATOR
+
 ## Orchestration Layer (Advanced)
 
-*(Tasks for system health and multi-agent coordination)*
+_(Tasks for system health and multi-agent coordination)_
 
 - [ ] Check `dispatch/queue/` for pending task assignments
 - [ ] Monitor agent pulse in `registry/AGENTS_STATE.md`
 - [ ] Rotate/Archive old session logs and tasks
 - [ ] Verify global Evidence ledger consistency
-:::
+      :::

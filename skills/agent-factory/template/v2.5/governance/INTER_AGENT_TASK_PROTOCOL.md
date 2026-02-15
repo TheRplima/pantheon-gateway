@@ -12,6 +12,7 @@ This document is the sovereign source of truth for the Pantheon v2.5 ecosystem. 
 Every task operates within an atomic folder. Physical possession of the folder defines the operational "turn", but not the execution authority.
 
 ### Canonical Structure
+
 - `00_brief.md`: Objective definition (Mandatory for Requester).
 - `10_plan.md`: Execution strategy (Mandatory for Executor).
 - `20_execution/`: Subsystem for drafts and technical evidence.
@@ -25,6 +26,7 @@ Every task operates within an atomic folder. Physical possession of the folder d
 The `STATE.json` file is the internal source of truth regarding semantic progress. Any state or transition outside this schema invalidates the task.
 
 ### Mandatory Fields
+
 - `task_id`: UUID or unique task ID.
 - `current_state`: Current state from the list below.
 - `requester_agent`: ID of the requesting agent (where the task should return).
@@ -35,6 +37,7 @@ The `STATE.json` file is the internal source of truth regarding semantic progres
 - `requires_exec_approval`: Boolean (Determined in Brief).
 
 ### Valid and Terminal States
+
 - **In Progress**: `received`, `planning`, `plan_pending_approval`, `ready_for_execution`, `executing`, `exec_pending_approval`, `delivering`.
 - **Terminal**: `done` (Success), `failed` (Technical error), `cancelled` (Aborted).
 
@@ -50,14 +53,17 @@ Pantheon governance is technical, not moral.
 ## 4. Workflow and Transitions
 
 ### Step 1: Formalization (Requester -> Orchestrator)
+
 1. Creates `task_[ID]` with `00_brief.md` and `STATE.json` (`received`).
 2. Moves to Orchestrator's `inbox` and executes `iatp-notify`.
 
 ### Step 2: Orchestration (Orchestrator -> Executor)
+
 1. Orchestrator validates the Brief and injects required `LOCKS/*.required`.
 2. Identifies the Specialist and moves it to their `inbox`.
 
 ### Step 3: Execution and Substance Mandate
+
 1. **Planning**: Agent moves to `active/` and generates `10_plan.md`.
 2. **Approval**: If `requires_plan_approval`, moves to `outbox` and waits for `plan.approved.sig`.
 3. **Execution**: With the signature, executes in `20_execution/` and generates `30_report.md`.

@@ -23,7 +23,12 @@
     "agent_type": "ORCHESTRATOR",
     "domain": "governance",
     "template": { "key": "agent-factory-template", "version": "v2.5", "checksum": "sha256:..." },
-    "model": { "key": "orchestrator", "version": "2.5.0", "type": "ORCHESTRATOR", "checksum": "sha256:..." },
+    "model": {
+      "key": "orchestrator",
+      "version": "2.5.0",
+      "type": "ORCHESTRATOR",
+      "checksum": "sha256:..."
+    },
     "factory": { "template_version": "v2.5", "force": false, "register": false },
     "paths": {
       "active_workspace_path": "/home/node/workspaces/f6ba4f2c-b7e6-4d17-973f-845046120a39/ba11f8a1-e84d-4cb0-ae19-c3dbf1001f34",
@@ -61,7 +66,15 @@
     },
     "workspace_checks": {
       "exists": true,
-      "bootstrap_files_present": ["AGENTS.md", "SOUL.md", "TOOLS.md", "IDENTITY.md", "USER.md", "HEARTBEAT.md", "BOOTSTRAP.md"]
+      "bootstrap_files_present": [
+        "AGENTS.md",
+        "SOUL.md",
+        "TOOLS.md",
+        "IDENTITY.md",
+        "USER.md",
+        "HEARTBEAT.md",
+        "BOOTSTRAP.md"
+      ]
     }
   }
 }
